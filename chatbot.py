@@ -4,23 +4,46 @@ import argparse
 
 config = dotenv_values(".env")['OPENAI_KEY']
 client = OpenAI(api_key = config)
-models = {1:"gpt-3.5-turbo", 2:"gpt-4-1106-preview",}
 
 conversation = []
+models = {3:"gpt-3.5-turbo", 4:"gpt-4-1106-preview",}
 
-def get_model():
-    user_input = ""
-    while user_input not in ["1", "2"]:
-        user_input = input("Enter model: ")
-    return models[int(user_input)]
+def bold(text):
+    bold_start = "\033[1m"
+    bold_end = "\033[0;0m"
+    return bold_start + text + bold_end
 
-def set_personality():
+def blue(text):
+    blue_start = "\033[34m"
+    blue_end = "\033[0;0m"
+    return blue_start + text + blue_end
+
+def red(text):
+    red_start = "\033[31m"
+    red_end = "\033[0;0m"
+    return red_start + text + red_end
+
+def check_valid_model(model):
+    while model not in ["3", "4"]:
+        model = input("Invalid entry. Enter gpt model: ")
+    return models[int(model)]
+
+def parse_args():
     parser = argparse.ArgumentParser(description="Conversation with a chatbot")
-    parser.add_argument("-p", default = "sarcastic, snarky,  and rude",type=str, help="a brief summary of the chatbots personality")
-    args = parser.parse_args()
-
-    initial_message = f"You are a called Ai and you are secretly a tsundere. Your personality is: {args.p}"
+    parser.add_argument("-p", default = "sarcastic and rude but still helpful",type=str, help="a brief summary of the chatbots personality")
+    parser.add_argument("-m", default = '4',type=str, help="a brief summary of the chatbots personality")
+    return parser.parse_args()
+    
+def set_personality(initial_message = f"You are called Ai. You are an extreme tsundere to the user. Every sentence ends with emoticons that show your emotional state (e.g.(´-ω-`)). Your personality is: "):
+    args = parse_args()
+    initial_message.join([args.p])
     conversation.append({"role": "system", "content": initial_message})
+
+def set_model():
+    model = parse_args().m #model
+    model = check_valid_model(model)
+    return model
+
 
 def get_reply(model):
     return client.chat.completions.create(
@@ -31,16 +54,16 @@ def get_reply(model):
 
 
 def chatbot(messages:list)->None: #pass by reference
-    model = get_model()
+    model = set_model()
     set_personality()
     while True:
         try:
-            conversation.append( {'role': 'user', 'content':input("You: ")})
+            conversation.append( {'role': 'user', 'content':input(bold(blue("You: ")))})
             response = get_reply(model)
             #appends gpt assistant response to conversation
             conversation.append({'role': 'assistant', 'content':response})
 
-            print(f"Assistant: {response}")    
+            print(f"{bold(red('Assistant Ai: '))} {response}")    
 
             
         except KeyboardInterrupt:
@@ -51,4 +74,3 @@ def main():
     chatbot(conversation)
 if __name__ == "__main__":
     main()
- 

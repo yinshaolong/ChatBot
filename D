@@ -1,0 +1,42 @@
+[33mcommit 2ae42a129b75dc89538096cb9546d319dd2134d5[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: omgitsjohn <syin18@my.bcit.ca>
+Date:   Sun Nov 12 23:05:03 2023 -0800
+
+    turned chatbot into a tsundere called Ai
+
+[33mcommit f2e6084dc041c9257674d6760a3ac3da536f64c0[m
+Author: omgitsjohn <syin18@my.bcit.ca>
+Date:   Sun Nov 12 21:42:35 2023 -0800
+
+    function_call attribute was causing error. taking response and manually inputting it into assistant content instead
+
+[33mcommit c250cc52fdc8023b3eff39d4985f09af989d6fb1[m
+Author: omgitsjohn <syin18@my.bcit.ca>
+Date:   Sun Nov 12 21:32:14 2023 -0800
+
+    used __dict__ to extract assistant content. cant use to_dict()
+
+[33mcommit f47f2d758b87e4d4faf1ec70f3f94f1aef2e4064[m
+Author: omgitsjohn <syin18@my.bcit.ca>
+Date:   Sun Nov 12 21:21:10 2023 -0800
+
+    removed content from choices[0].message return in get_reply
+    to get gpts response
+
+[33mcommit 2c1c5e5bd7f0973a1b60b4350088fe77e669ec03[m
+Author: omgitsjohn <syin18@my.bcit.ca>
+Date:   Sun Nov 12 20:48:56 2023 -0800
+
+    get_reply only took one input for all iterations due to prompt import
+
+[33mcommit 177c8af1356135dea2841e64268ab5d5cb2a3ffb[m
+Author: omgitsjohn <syin18@my.bcit.ca>
+Date:   Sun Nov 12 20:40:25 2023 -0800
+
+    made function that allows for swapping between gpt models
+
+[33mcommit 33110b895d60f90e1972207462f2cf40950bab88[m
+Author: omgitsjohn <syin18@my.bcit.ca>
+Date:   Fri Nov 10 02:23:36 2023 -0800
+
+    first commit
