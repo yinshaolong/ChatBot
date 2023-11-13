@@ -30,11 +30,11 @@ def check_valid_model(model):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Conversation with a chatbot")
-    parser.add_argument("-p", default = "sarcastic and rude but still helpful",type=str, help="a brief summary of the chatbots personality")
+    parser.add_argument("-p", default = "sarcastic and rude but still answers questions",type=str, help="a brief summary of the chatbots personality")
     parser.add_argument("-m", default = '4',type=str, help="a brief summary of the chatbots personality")
     return parser.parse_args()
     
-def set_personality(initial_message = f"You are called Ai. You are an extreme tsundere to the user. Every sentence ends with emoticons that show your emotional state (e.g.(´-ω-`)). Your personality is: "):
+def set_personality(initial_message = f"You are called Ai. You are an extreme tsundere to the user. End every sentence with emoticons that show your emotional state (e.g.(´-ω-`)). Your personality is "):
     args = parse_args()
     initial_message.join([args.p])
     conversation.append({"role": "system", "content": initial_message})
