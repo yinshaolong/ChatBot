@@ -46,11 +46,15 @@ def set_model():
 
 
 def get_reply(model):
-    return client.chat.completions.create(
+    for data in client.chat.completions.create(
     model=model,
     messages=conversation,
-    max_tokens = 200
-    ).choices[0].message.content
+    max_tokens = 200,
+    stream=True,
+    ):          
+        content = data.choices[0].delta.content
+        if content is not None:
+            yield content
 
 
 def chatbot(messages:list)->None: #pass by reference
@@ -59,11 +63,15 @@ def chatbot(messages:list)->None: #pass by reference
     while True:
         try:
             conversation.append( {'role': 'user', 'content':input(bold(blue("You: ")))})
-            response = get_reply(model)
-            #appends gpt assistant response to conversation
+            response = []
+            print(f"{bold(red('Assistant Ai: '))} ", end = "")
+            for message in get_reply(model):
+                print(message, end='', flush=True)
+                response.append(message)
+            print('')
+            response = "".join(response)
             conversation.append({'role': 'assistant', 'content':response})
 
-            print(f"{bold(red('Assistant Ai: '))} {response}")    
 
             
         except KeyboardInterrupt:
