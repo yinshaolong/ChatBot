@@ -12,18 +12,28 @@ def get_reply(model):
     model=model,
     messages=conversation,
     max_tokens = 20
-    ).choices[0].message
+    )
+# .choices[0].message
 
 def chatbot(messages:list)->None:
     while True:
         try:
             conversation.append( {'role': 'user', 'content':input("Enter your message: ")})
-            response = get_reply(models[1])
-            print("response", response)    
-            
+            response = get_reply(models[1]).to_dict()
+            #appends gpt assistant response to conversation
+            conversation.append(response)
+
             print(conversation)
+            print("response", response)    
+            print(response.content)    
+
+            
         except KeyboardInterrupt:
             print("Exiting....")
             break
 
-chatbot(conversation)
+# chatbot(conversation)
+conversation.append( {'role': 'user', 'content':input("Enter your message: ")})
+#__dict__ allows for dict conversion
+    #cant use to_dict()
+print(get_reply(models[1]).choices[0].message.__dict__)
