@@ -1,4 +1,4 @@
-# TsundereBot 
+# ChatBot 
 
 ### `python chatbot.py -p "<insert text>"`
   Gives the bot user-defined personality characteristics.
