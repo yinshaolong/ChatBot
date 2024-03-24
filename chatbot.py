@@ -1,6 +1,7 @@
 from openai import OpenAI
 from dotenv import dotenv_values
 import argparse
+from pathlib import Path
 
 config = dotenv_values(".env")['OPENAI_KEY']
 client = OpenAI(api_key = config)
@@ -63,14 +64,23 @@ def chatbot(messages:list)->None: #pass by reference
     while True:
         try:
             conversation.append( {'role': 'user', 'content':input(bold(blue("You: ")))})
-            response = []
+            ai_response = []
             print(f"{bold(red('Assistant Ai: '))} ", end = "")
             for message in get_reply(model):
                 print(message, end='', flush=True)
-                response.append(message)
+                ai_response.append(message)
             print('')
-            response = "".join(response)
-            conversation.append({'role': 'assistant', 'content':response})
+            ai_response = "".join(ai_response)
+            conversation.append({'role': 'assistant', 'content':ai_response})
+
+            speech_file_path = Path(__file__).parent / "speech.mp3"
+            response = client.audio.speech.create(
+            model="tts-1",
+            voice="alloy",
+            input= ai_response
+            )
+
+            response.stream_to_file(speech_file_path)
 
 
             
