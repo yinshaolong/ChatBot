@@ -5,9 +5,11 @@ from pathlib import Path
 from pygame import mixer #to autom
 import time
 from get_audio import record_audio
-import uuid #used to bypass wriitng to the same file
+import uuid #used to bypass writitng to the same file
 
 mixer.init()
+
+RECORDING_LENGTH = 5
 
 config = dotenv_values(".env")['OPENAI_KEY']
 client = OpenAI(api_key = config)
@@ -66,7 +68,7 @@ def get_reply(model):
 
 def text_to_speech(ai_response:str)->None:
     # Generate a unique filename for each response
-    speech_file_path = Path(__file__).parent / f"speech_{uuid.uuid4()}.mp3"
+    speech_file_path = Path(__file__).parent / f"speech/speech_{uuid.uuid4()}.mp3"
 
     response = client.audio.speech.create(
         model="tts-1",
@@ -87,7 +89,7 @@ def text_to_speech(ai_response:str)->None:
 
 
 def speech_to_text(filename="output.wav")->str:
-    audio_file = open("output.wav", "rb")
+    audio_file = open("speech/output.wav", "rb")
     transcription = client.audio.transcriptions.create(
     model="whisper-1", 
     file=audio_file
@@ -100,7 +102,7 @@ def chatbot(messages:list)->None: #pass by reference
     while True:
         try:
             user_message = bold(blue("You: "))
-            record_audio(2)
+            record_audio(RECORDING_LENGTH)
             recording = speech_to_text().text # object -> Transcription(text="User says stuff here")
             user_message += recording
             print(user_message)

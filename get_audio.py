@@ -10,7 +10,7 @@ RATE = 44100
 
 
 def record_audio(seconds: int):
-    output_path = "output.wav"
+    output_path = "speech/output.wav"
     with wave.open(output_path, "wb") as wf:
         p = pyaudio.PyAudio()
         wf.setnchannels(CHANNELS)
@@ -28,7 +28,7 @@ def record_audio(seconds: int):
 
         stream.close()
         p.terminate()
-    print(f"File saved at {output_path}")
+    # print(f"File saved at {output_path}")
     return output_path
 
 if __name__ == "__main__":
