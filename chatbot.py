@@ -5,6 +5,7 @@ from pathlib import Path
 from pygame import mixer #to autom
 import time
 from get_audio import record_audio
+import uuid #used to bypass wriitng to the same file
 
 mixer.init()
 
@@ -62,30 +63,47 @@ def get_reply(model):
         if content is not None:
             yield content
 
+
 def text_to_speech(ai_response:str)->None:
-     #text to speech
-            speech_file_path = Path(__file__).parent / "speech.mp3"
-            response = client.audio.speech.create(
-            model="tts-1",
-            voice="alloy",
-            input= ai_response
-            )
+    # Generate a unique filename for each response
+    speech_file_path = Path(__file__).parent / f"speech_{uuid.uuid4()}.mp3"
 
-            response.stream_to_file(speech_file_path)
-            # Play the speech file
-            mixer.music.load(str(speech_file_path))
-            mixer.music.play()
+    response = client.audio.speech.create(
+        model="tts-1",
+        voice="nova",
+        input= ai_response
+    )
 
-            # Wait for the audio to finish playing
-            while mixer.music.get_busy():
-                time.sleep(1)
+    # Save the speech to a file
+    response.stream_to_file(speech_file_path)
+
+    # Play the speech file
+    mixer.music.load(str(speech_file_path))
+    mixer.music.play()
+
+    # Wait for the audio to finish playing
+    while mixer.music.get_busy():
+        time.sleep(1)
+
+
+def speech_to_text(filename="output.wav")->str:
+    audio_file = open("output.wav", "rb")
+    transcription = client.audio.transcriptions.create(
+    model="whisper-1", 
+    file=audio_file
+    )
+    return transcription
 
 def chatbot(messages:list)->None: #pass by reference
     model = set_model()
     set_personality()
     while True:
         try:
-            user_message = input(bold(blue("You: ")))
+            user_message = bold(blue("You: "))
+            record_audio(2)
+            recording = speech_to_text().text # object -> Transcription(text="User says stuff here")
+            user_message += recording
+            print(user_message)
             conversation.append( {'role': 'user', 'content':user_message})
             ai_response = []
             print(f"{bold(red('Assistant Ai: '))} ", end = "")
@@ -94,8 +112,8 @@ def chatbot(messages:list)->None: #pass by reference
                 ai_response.append(message)
             print('')
             ai_response = "".join(ai_response)
-            conversation.append({'role': 'assistant', 'content':ai_response})
             text_to_speech(ai_response)
+            conversation.append({'role': 'assistant', 'content':ai_response})
 
             
         except KeyboardInterrupt:
