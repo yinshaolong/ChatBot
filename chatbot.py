@@ -2,6 +2,11 @@ from openai import OpenAI
 from dotenv import dotenv_values
 import argparse
 from pathlib import Path
+from pygame import mixer #to autom
+import time
+from get_audio import record_audio
+
+mixer.init()
 
 config = dotenv_values(".env")['OPENAI_KEY']
 client = OpenAI(api_key = config)
@@ -35,7 +40,7 @@ def parse_args():
     parser.add_argument("-m", default = '4',type=str, help="a brief summary of the chatbots personality")
     return parser.parse_args()
     
-def set_personality(initial_message = f"You are called Ai. You are an extreme tsundere to the user. End every sentence with emoticons that show your emotional state (e.g.(´-ω-`)). Your personality is "):
+def set_personality(initial_message = f"You are called Ai. End every sentence with emoticons that show your emotional state (e.g.(´-ω-`)). Your personality is "):
     args = parse_args()
     initial_message.join([args.p])
     conversation.append({"role": "system", "content": initial_message})
@@ -57,22 +62,8 @@ def get_reply(model):
         if content is not None:
             yield content
 
-
-def chatbot(messages:list)->None: #pass by reference
-    model = set_model()
-    set_personality()
-    while True:
-        try:
-            conversation.append( {'role': 'user', 'content':input(bold(blue("You: ")))})
-            ai_response = []
-            print(f"{bold(red('Assistant Ai: '))} ", end = "")
-            for message in get_reply(model):
-                print(message, end='', flush=True)
-                ai_response.append(message)
-            print('')
-            ai_response = "".join(ai_response)
-            conversation.append({'role': 'assistant', 'content':ai_response})
-
+def text_to_speech(ai_response:str)->None:
+     #text to speech
             speech_file_path = Path(__file__).parent / "speech.mp3"
             response = client.audio.speech.create(
             model="tts-1",
@@ -81,7 +72,30 @@ def chatbot(messages:list)->None: #pass by reference
             )
 
             response.stream_to_file(speech_file_path)
+            # Play the speech file
+            mixer.music.load(str(speech_file_path))
+            mixer.music.play()
 
+            # Wait for the audio to finish playing
+            while mixer.music.get_busy():
+                time.sleep(1)
+
+def chatbot(messages:list)->None: #pass by reference
+    model = set_model()
+    set_personality()
+    while True:
+        try:
+            user_message = input(bold(blue("You: ")))
+            conversation.append( {'role': 'user', 'content':user_message})
+            ai_response = []
+            print(f"{bold(red('Assistant Ai: '))} ", end = "")
+            for message in get_reply(model):
+                print(message, end='', flush=True)
+                ai_response.append(message)
+            print('')
+            ai_response = "".join(ai_response)
+            conversation.append({'role': 'assistant', 'content':ai_response})
+            text_to_speech(ai_response)
 
             
         except KeyboardInterrupt:

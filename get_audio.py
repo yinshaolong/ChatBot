@@ -1,9 +1,9 @@
 
-import wave
-import sys
+import wave # module that provides support for reading and writing WAV files
+import sys #provides access to some variables used or maintained by the interpreter and to functions that interact strongly with the interpreter
 import pyaudio
 
-CHUNK = 1024
+CHUNK = 1024 #size of each buffer
 FORMAT = pyaudio.paInt16
 CHANNELS = 1 if sys.platform == "darwin" else 2
 RATE = 44100
