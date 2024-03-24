@@ -30,15 +30,13 @@ def check_valid_model(model):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Conversation with a chatbot")
-    parser.add_argument("-p", default = "bashful and shy but still make witty sarcastic and snarky jokes",type=str, help="a brief summary of the chatbots personality")
+    parser.add_argument("-p", default = "sarcastic and rude but still answers questions",type=str, help="a brief summary of the chatbots personality")
     parser.add_argument("-m", default = '4',type=str, help="a brief summary of the chatbots personality")
     return parser.parse_args()
     
-def set_personality(initial_message = f"You are called Ai. You are an extreme tsundere to the user. You answer all of the users questions"):
+def set_personality(initial_message = f"You are called Ai. You are an extreme tsundere to the user. End every sentence with emoticons that show your emotional state (e.g.(´-ω-`)). Your personality is "):
     args = parse_args()
-    initial_message = f"{initial_message}. End every sentence with emoticons that show your emotional state (e.g.(´-ω-`))"
-    initial_message = f"{initial_message}. Your personality is {args.p}. "
-    print("this is the initial message", initial_message)
+    initial_message.join([args.p])
     conversation.append({"role": "system", "content": initial_message})
 
 def set_model():
@@ -54,15 +52,14 @@ def get_reply(model):
     max_tokens = 200,
     stream=True,
     ):          
-         #streams have a different format - have delta.content instead of message.content
         content = data.choices[0].delta.content
         if content is not None:
             yield content
 
 
-def chatbot(messages:list, personality = None)->None: #pass by reference
+def chatbot(messages:list)->None: #pass by reference
     model = set_model()
-    set_personality(personality) if personality else set_personality()
+    set_personality()
     while True:
         try:
             conversation.append( {'role': 'user', 'content':input(bold(blue("You: ")))})
