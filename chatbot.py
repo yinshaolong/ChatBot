@@ -105,7 +105,7 @@ def parse_args():
     # parser.add_argument("-l", default="en-US", type=str, help="language to use")
     return parser.parse_args()
     
-def set_personality(initial_message = f"You are called Ai. End every sentence with emoticons that show your emotional state (e.g.(´-ω-`)). Your personality is "):
+def set_personality(initial_message = f"You are called Ai. End every sentence with emoticons that show your emotional state (e.g.(´-ω-`)). Respond in the same language as the most recent language the user had used.   Your personality is "):
     args = parse_args()
     initial_message += args.p
     conversation.append({"role": "system", "content": initial_message})
