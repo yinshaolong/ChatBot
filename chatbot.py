@@ -102,7 +102,6 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Conversation with a chatbot")
     parser.add_argument("-p", default = "extremely sarcastic and rude but still answers questions",type=str, help="a brief summary of the chatbots personality")
     parser.add_argument("-m", default = '4',type=str, help="a variable that determines the gpt model to use. 3 or 4. Default is 4.")
-    # parser.add_argument("-l", default="en-US", type=str, help="language to use")
     return parser.parse_args()
     
 def set_personality(initial_message = f"You are called Ai. End every sentence with emoticons that show your emotional state (e.g.(´-ω-`)). Respond in the same language as the most recent language the user had used.   Your personality is "):
@@ -114,12 +113,6 @@ def set_model():
     model = parse_args().m #model
     model = check_valid_model(model)
     return model
-
-def get_language():
-    language = parse_args().l
-    while language.lower().capitalize() not in available_languages:
-        language = input("Invalid entry. Enter a valid language: ")
-    return language
 
 def get_reply(model):
     for data in client.chat.completions.create(
@@ -136,7 +129,7 @@ def get_reply(model):
 def text_to_speech(ai_response:str)->None:
     # Generate a unique filename for each response
     speech_file_path = Path(__file__).parent / f"speech/speech_{uuid.uuid4()}.mp3"
-
+    #inbuilt detection of language
     response = client.audio.speech.create(
         model="tts-1",
         voice="nova",
@@ -157,6 +150,7 @@ def text_to_speech(ai_response:str)->None:
 
 def speech_to_text(filename="output.wav")->str:
     audio_file = open("speech/output.wav", "rb")
+    #inbuilt detection of language
     transcription = client.audio.transcriptions.create(
     model="whisper-1", 
     file=audio_file
