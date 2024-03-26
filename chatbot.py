@@ -9,7 +9,7 @@ import uuid #used to bypass writitng to the same file
 
 mixer.init()
 
-RECORDING_LENGTH = 5
+RECORDING_LENGTH = 4
 
 config = dotenv_values(".env")['OPENAI_KEY']
 client = OpenAI(api_key = config)
@@ -40,7 +40,8 @@ def check_valid_model(model):
 def parse_args():
     parser = argparse.ArgumentParser(description="Conversation with a chatbot")
     parser.add_argument("-p", default = "extremely sarcastic and rude but still answers questions",type=str, help="a brief summary of the chatbots personality")
-    parser.add_argument("-m", default = '4',type=str, help="a brief summary of the chatbots personality")
+    parser.add_argument("-m", default = '4',type=str, help="a variable that determines the gpt model to use. 3 or 4. Default is 4.")
+    parser.add_argument("-l", default="en-US", type=str, help="language to use")
     return parser.parse_args()
     
 def set_personality(initial_message = f"You are called Ai. End every sentence with emoticons that show your emotional state (e.g.(´-ω-`)). Your personality is "):
@@ -67,6 +68,7 @@ def get_reply(model):
 
 
 def text_to_speech(ai_response:str)->None:
+    language = parse_args().l
     # Generate a unique filename for each response
     speech_file_path = Path(__file__).parent / f"speech/speech_{uuid.uuid4()}.mp3"
 
